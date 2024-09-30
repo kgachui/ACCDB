@@ -1,4 +1,3 @@
-python-dotenv
-pyodbc
+pymysql
 requests
 python-dateutil

@@ -1,20 +1,19 @@
-import pyodbc 
+import sys
+import logging
+import pymysql
+import json
+import os
+
 
 class database:
-    def __init__(self, driver: str,
-                 server: str,
+    def __init__(self, rds_proxy_host: str,
                  user_id: str,
                  password: str,
                  database: str,
                  db_table: str):
     
         self.__db_table = db_table
-        self.cnxn = pyodbc.connect(Driver=driver,
-                                   Server=server,
-                                   UID=user_id,
-                                   PWD=password,
-                                   Database=database,
-                                   TrustServerCertificate="yes")
+        self.cnxn = pymysql.connect(host=rds_proxy_host, user=user_id, passwd=password, db=database, connect_timeout=5)
         
 
 

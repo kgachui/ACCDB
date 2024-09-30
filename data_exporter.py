@@ -3,11 +3,23 @@ from dotenv import load_dotenv, dotenv_values
 import db_writer
 import http_requests
 import json_parser
-import sys
+import datetime
+
+def get_ts(time_delta: int) -> datetime:
+    # Get current timestamp
+    current_timestamp = datetime.datetime.now() 
+
+    # Create a timedelta object for 1 minute
+    delta = datetime.timedelta(time_delta)
+
+    # Return current timestamp minus time delta
+    return current_timestamp - delta
+
  
-def main(interval_start: str="2024-08-05T13:00:00-0500", interval_end: str="2024-08-05T13:59:59-0500"):
+def main():
     # loading variables from .env file
     load_dotenv() 
+    data_pull_interval_minutes = os.getenv("DATA_PULL_INTERVAL_MINUTES")
     base_url = os.getenv("BASE_URL")
     token_req_url = os.getenv("TOKEN_URL")
     client_id = os.getenv("CLIENT_ID")
@@ -18,10 +30,13 @@ def main(interval_start: str="2024-08-05T13:00:00-0500", interval_end: str="2024
     db_pass = os.getenv("DB_PASS")
     database = os.getenv("DATABASE")
     db_table = os.getenv("DB_TABLE")
+    rds_proxy_host = os.getenv("RDS_PROXY_HOST")
+
+    interval_start = get_ts(data_pull_interval_minutes)
+    interval_end = get_ts(1) # timestamp from 1 minute ago
 
     # set up db connection
-    db=db_writer.database(driver=db_driver,
-                          server=db_server,
+    db=db_writer.database(rds_proxy_host=rds_proxy_host,
                           user_id=db_user,
                           password=db_pass,
                           database=database,
@@ -40,7 +55,5 @@ def main(interval_start: str="2024-08-05T13:00:00-0500", interval_end: str="2024
     db.insert_data(acd_db_data)
     
 
-if __name__ == "__main__":
-    interval_start = "2024-09-05T13:00:00-0500"#sys.argv[1]
-    interval_end = "2024-09-05T13:59:59-0500"#sys.argv[2]
-    main(interval_start, interval_end)
+if __name__ == "__main__":    
+    main()
