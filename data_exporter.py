@@ -10,7 +10,7 @@ def get_ts(time_delta: int) -> datetime:
     current_timestamp = datetime.datetime.now() 
 
     # Create a timedelta object for 1 minute
-    delta = datetime.timedelta(time_delta)
+    delta = datetime.timedelta(minutes=time_delta)
 
     # Return current timestamp minus time delta
     return current_timestamp - delta
@@ -19,7 +19,7 @@ def get_ts(time_delta: int) -> datetime:
 def main():
     # loading variables from .env file
     load_dotenv() 
-    data_pull_interval_minutes = os.getenv("DATA_PULL_INTERVAL_MINUTES")
+    data_pull_interval_minutes = os.getenv("PULL_INTERVAL_MINUTES")
     base_url = os.getenv("BASE_URL")
     token_req_url = os.getenv("TOKEN_URL")
     client_id = os.getenv("CLIENT_ID")
@@ -32,7 +32,7 @@ def main():
     db_table = os.getenv("DB_TABLE")
     rds_proxy_host = os.getenv("RDS_PROXY_HOST")
 
-    interval_start = get_ts(data_pull_interval_minutes)
+    interval_start = get_ts(int(data_pull_interval_minutes))
     interval_end = get_ts(1) # timestamp from 1 minute ago
 
     # set up db connection
